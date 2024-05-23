@@ -1,16 +1,30 @@
-import { useRef } from "react";
-
+import Input from './Input';
+import { isEmail, hasMinLength, isNotEmpty} from '../util/validation';
+import { useInput } from '../hooks/useInput';
 
 export default function Login() {
+  const {
+    value: emailValue,
+    handleInputChange: handleEmailChange,
+    handleInputBlur: handleEmailBlur,
+    hasErro: emailHasError
+  } = useInput('', (value) => isEmail(value) && isNotEmpty(value));
 
-  const email = useRef();
-  const password = useRef();
+  const {
+    value: passwordValue,
+    handleInputChange: handlePasswordChange,
+    handleInputBlur: handlePasswordBlur,
+    hasErro: passwordHasError
+   } = useInput('', (value) => hasMinLength(value, 6));
 
-  function handleSubmit(event){
-   event.preventDefault();
-   
-   const enteredEmail = email.current.value;
-   const enteredPassword = password.current.value;
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if(emailHasError || passwordHasError){
+      return; 
+    }
+
+    console.log(emailValue, passwordValue);
   }
 
   return (
@@ -18,15 +32,27 @@ export default function Login() {
       <h2>Login</h2>
 
       <div className="control-row">
-        <div className="control no-margin">
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" name="email" ref={email}/>
-        </div>
+        <Input
+          label="Email"
+          id="email"
+          type="email"
+          name="email"
+          onBlur={handleEmailBlur}
+          onChange={handleEmailChange}
+          value={emailValue}
+          error={emailHasError && 'Please enter a valid email!'}
+        />
 
-        <div className="control no-margin">
-          <label htmlFor="password">Password</label>
-          <input id="password" type="password" ref={password}/>
-        </div>
+        <Input
+          label="Password"
+          id="password"
+          type="password"
+          name="password"
+          onChange={handlePasswordChange}
+          onBlur={handlePasswordBlur}
+          value={passwordValue}
+          error={passwordHasError && 'Please enter a valid password!'}
+        />
       </div>
 
       <p className="form-actions">
